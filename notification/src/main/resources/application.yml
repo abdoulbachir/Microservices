@@ -24,3 +24,16 @@ eureka:
       defaultZone: http://localhost:8761/eureka
       fetch-registry: true  # This is by default true
       register-with-eureka: true # This is by default true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  pattern:
+    level: %5p [${spring.application.name}, %X{traceId}:-}, %X{spanId:-}]
