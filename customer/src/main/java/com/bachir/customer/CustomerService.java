@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CustomerService {
 
+//    private final RestTemplate restTemplate;
     private CustomerRepository customerRepository;
     private final FraudClient fraudClient;
     private final NotificationClient notificationClient;
@@ -25,7 +26,16 @@ public class CustomerService {
         // todo: check if email is valid
         // todo: check if email not taken
         customerRepository.saveAndFlush(customer);
+
         // todo: check if fraudster
+//        //Using RestTemplate
+//        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
+//                "http://FRAUD/api/v1/fraud-check/{customerId}",
+//                FraudCheckResponse.class,
+//                customer.getId()
+//        );
+
+        //Using Open Feign
         FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
 
         if (fraudCheckResponse.isFraudster()){
