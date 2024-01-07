@@ -9,7 +9,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 //import org.springframework.cloud.netflix.eureka.EnableEurekaClient;  This is deprecated; no need to add it. Only need to add dependency in pom.xml
 
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {
+                "com.bachir.customer",
+                "com.bachir.amqp"
+        }
+)
 @EnableFeignClients(
         basePackages = "com.bachir.clients"
 )
