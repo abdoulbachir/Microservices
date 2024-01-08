@@ -1,23 +1,25 @@
-Server:
-  port: 8083
-
+server:
+  port: 8081
 spring:
   application:
-    name: api-gateway
-  cloud:
-    gateway:
-      routes:
-        - id: customer
-          uri: lb://CUSTOMER
-          predicates:
-            - Path=/api/v1/customers/** #Anthing that hit to this api should be to `lb://CUSTOMER`
-  main:
-    web-application-type: reactive
+    name: fraud
+  datasource:
+    username: bachir
+    password: password
+    url: jdbc:postgresql://postgres2:5432/fraud
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://eureka-server:8761/eureka
     fetch-registry: true  # This is by default true
     register-with-eureka: true # This is by default true
 
@@ -33,4 +35,3 @@ management:
 logging:
   pattern:
     level: '%5p [${spring.application.name}, %X{traceId}:-}, %X{spanId:-}]'
-
