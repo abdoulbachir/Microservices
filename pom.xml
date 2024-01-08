@@ -28,6 +28,7 @@
 		<spring.boot.maven.plugin.version>3.2.1</spring.boot.maven.plugin.version>
 		<spring-cloud.version>2022.0.3</spring-cloud.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<image>bachir95/${project.artifactId}:${project.version}</image> <!-- Centralising the image name -->
 	</properties>
 
 <!--	This is so that our subprojects can pick whatever dependency they want-->
@@ -71,15 +72,15 @@
 	</dependencies>
 
 	<build>
-<!--		The plugins in "pluginManagement" have to be declared if needed in a module - Not installed by default-->
+<!--		The plugins in "pluginManagement" have to be declared if needed in a module - Not installed by default  -->
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>org.springframework.boot</groupId> <!-- lock down plugins version to avoid using Maven defaults-->
+					<groupId>org.springframework.boot</groupId> <!-- lock down plugins version to avoid using Maven defaults  -->
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>${spring.boot.maven.plugin.version}</version>
 
-<!--					We have to use this since we're not using "spring-boot-starter-parent". We're creating our own parent POM.xml-->
+<!--					We have to use this since we're not using "spring-boot-starter-parent". We're creating our own parent POM.xml  -->
 					<executions>
 						<execution>
 							<goals>
@@ -88,7 +89,35 @@
 						</execution>
 					</executions>
 				</plugin>
+
+				<plugin>
+					<groupId>com.google.cloud.tools</groupId>
+					<artifactId>jib-maven-plugin</artifactId>
+					<version>3.4.0</version>
+					<configuration>
+						<from>
+<!--							The @sha is to keep the current latest version even if in the future they change or updated it-->
+							<image>eclipse-temurin:17@sha256:2b47a8ea946ce1e5365a1562414ed576e378b7b670cadff3fb98ebecf2890cdc</image>
+							<platforms>
+								<platform>
+									<architecture>arm64</architecture>
+									<os>linux</os>
+								</platform>
+								<platform>
+									<architecture>amd64</architecture>
+									<os>linux</os>
+								</platform>
+							</platforms>
+						</from>
+						<to>
+							<tags>
+								<tag>latest</tag>
+							</tags>
+						</to>
+					</configuration>
+				</plugin>
 			</plugins>
+
 		</pluginManagement>
 
 		<plugins>

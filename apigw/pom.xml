@@ -11,8 +11,9 @@
     </parent>
 
     <artifactId>apigw</artifactId>
-    <packaging>jar</packaging>
 
+    <!--    To package microservice into jar-->
+    <packaging>jar</packaging>
     <build>
         <plugins>
             <plugin>
@@ -21,6 +22,30 @@
             </plugin>
         </plugins>
     </build>
+
+<!--    To build docker image-->
+    <profiles>
+        <profile>
+            <id>build-docker-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+<!--                        This executions can be centralised too if we want, that way all our submodules will have it by default-->
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal> <!--This is to push it to our dockerhub-->
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
