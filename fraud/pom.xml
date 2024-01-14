@@ -64,7 +64,7 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.bachir</groupId>
+            <groupId>com.bachirmicroservices</groupId>
             <artifactId>clients</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>
