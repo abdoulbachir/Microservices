@@ -1,0 +1,46 @@
+# -----------------------------------
+# Zipkin StatefulSet Definition
+# -----------------------------------
+apiVersion: apps/v1  # API version for StatefulSets
+kind: StatefulSet  # Resource type for managing stateful applications
+metadata:
+  name: zipkin  # Name of the StatefulSet
+  labels:
+    app: zipkin # Labels to identify the StatefulSet as part of the "zipkin" application
+# -----------------------------------
+# StatefulSet Configuration
+# -----------------------------------
+spec:
+  serviceName: zipkin  # Service name for pod communication (used for stability)
+  replicas: 1  # Number of replicas (instances) of Zipkin to create and maintain
+  # -----------------------------------
+  # Pod Template
+  # -----------------------------------
+  template:
+    metadata:
+      name: zipkin  # Name of the pod template
+      labels:  # Labels applied to each pod
+        app: zipkin # Labels for pods to match the selector
+    spec:
+      containers:
+        - name: zipkin  # Container name
+          image: openzipkin/zipkin  # Docker image for Zipkin
+          imagePullPolicy: Always  # Always pull the latest Zipkin image
+          ports:
+            - containerPort: 9411  # Port exposed by the container
+              protocol: TCP
+          resources:  # Define resource requests and limits for the container
+            requests:
+              cpu: 100m  # Minimum CPU request
+              memory: 256Mi  # Minimum memory request
+            limits:
+              cpu: 200m  # Maximum allowed CPU usage
+              memory: 256Mi  # Maximum allowed memory usage
+
+      restartPolicy: Always  # Always restart the container on failure or termination.
+  # -----------------------------------
+  # Pod Selection
+  # -----------------------------------
+  selector:
+    matchLabels:  # Select pods with the matching labels
+      app: zipkin # Selects pods based on the "zipkin" label

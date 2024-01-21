@@ -1,4 +1,4 @@
-# This where we add postgres database name, username and password
+# This stores database connection details for a PostgreSQL deployment.
 
 apiVersion: v1  # Specifies the API version to use
 kind: ConfigMap  # Declares a ConfigMap resource

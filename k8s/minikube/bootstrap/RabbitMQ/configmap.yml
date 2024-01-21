@@ -1,0 +1,56 @@
+# -----------------------------------
+# ConfigMap for RabbitMQ configuration
+# -----------------------------------
+
+apiVersion: v1  # API version for Kubernetes objects
+kind: ConfigMap  # Type of object to store configuration data
+metadata:
+  name: rabbitmq-config  # Name of the ConfigMap
+
+data:  # Configuration data to be mounted into pods
+  # -----------------------------------
+  # Enabled plugins
+  # -----------------------------------
+  enabled_plugins: |  # List of plugins to enable
+    [rabbitmq_management,rabbitmq_peer_discovery_k8s].
+
+  # -----------------------------------
+  # Main RabbitMQ configuration file
+  # -----------------------------------
+  rabbitmq.conf: |
+    # Cluster formation. See https://www.rabbitmq.com/cluster-formation.html to learn more.
+    cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s # Use Kubernetes for peer discovery.
+    cluster_formation.k8s.host = kubernetes.default.svc.cluster.local # Kubernetes service host for peer discovery
+      # -------------------------------------------------------------------------------------------
+      #                     Address type for Kubernetes peer discovery
+      # Should RabbitMQ node name be computed from the pod's hostname or IP address?
+      # IP addresses are not stable, so using [stable] hostnames is recommended when possible.
+      # Set to "hostname" to use pod hostnames.
+      # When this value is changed, so should the variable used to set the RABBITMQ_NODENAME
+      # environment variable.
+      # -------------------------------------------------------------------------------------------
+    cluster_formation.k8s.address_type = hostname
+    cluster_formation.node_cleanup.interval = 30  # Check for removed nodes every 30 seconds and remove it from the cluster's list of active nodes.
+      # ----------------------------------------------------------------------------------------------
+      #         Only log warnings for the unknown nodes during node cleanup, but do not remove them.
+      # Set to 'false' if automatic removal of unknown/absent nodes is desired. 
+      # This can be dangerous, see:
+      #    * https://www.rabbitmq.com/cluster-formation.html#node-health-checks-and-cleanup
+      #    * https://groups.google.com/forum/#!msg/rabbitmq-users/wuOfzEywHXo/k8z_HWIkBgAJ
+      # ----------------------------------------------------------------------------------------------
+    cluster_formation.node_cleanup.only_log_warning = true
+    cluster_partition_handling = autoheal  # Attempt to automatically heal cluster partitions
+    queue_master_locator=min-masters # Master queue node is automatically assigned using the rabbitmq node with fewest masters
+    # -----------------------------------------------------------------------------------------
+    # This is just an example.
+    # This enables remote access for the default user with well known credentials.
+    # Consider deleting the default user and creating a separate user with a set of generated
+    # credentials instead.
+    # Learn more at https://www.rabbitmq.com/access-control.html#loopback-users
+    # ----------------------------------------------------------------------------------------- 
+    loopback_users.guest = false
+    
+    
+    
+    
+

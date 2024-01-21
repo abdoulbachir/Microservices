@@ -1,0 +1,19 @@
+# -----------------------------------
+# Zipkin Service Definition
+# -----------------------------------
+apiVersion: v1  # API version for services
+kind: Service  # Type of Kubernetes resource (a service)
+metadata:
+  name: zipkin  # Name of the service
+
+# -----------------------------------
+# Service Configuration
+# -----------------------------------
+spec:
+  selector:  # Criteria for selecting pods to route traffic to
+    app: zipkin  # Pods with the label "zipkin" will be selected
+  ports:  # Ports exposed by the service
+    - port: 9411  # External port accessible to clients
+      targetPort: 9411  # Port on the pods where traffic is forwarded
+      protocol: TCP  # Protocol used for communication
+  type: LoadBalancer  # Service type that exposes the service externally

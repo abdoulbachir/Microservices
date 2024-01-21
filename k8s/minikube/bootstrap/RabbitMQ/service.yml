@@ -1,0 +1,38 @@
+# ----------------------------------
+# RabbitMQ Service Definition
+# ----------------------------------
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq # Name of the Service.
+  labels: # Tags for identifying and associating pods.
+    app: rabbitmq  # Labels to identify the Service as part of the "rabbitmq" application.
+    type: LoadBalancer  # Indicates the service acts as a load balancer for RabbitMQ pods.
+# ----------------------------------
+# Service Configuration
+# ----------------------------------
+spec:
+  type: NodePort # Specifies the type of Service as NodePort. It exposes ports using static node ports.
+  ports:  # Define external ports and mappings to container ports.
+    - name: http # Port definition for HTTP access to RabbitMQ management UI
+      protocol: TCP # Protocol used by the port.
+      port: 15672 # External port exposed by the service for HTTP.
+      targetPort: 15672 # Port on RabbitMQ pods to receive HTTP traffic.
+      nodePort: 31672 # Static port on each node to access the Service from outside the cluster.
+    - name: amqp # Port definition for AMQP (Advanced Message Queuing Protocol).
+      protocol: TCP # Protocol used by the port.
+      port: 5672 # External port exposed by the service for AMQP.
+      targetPort: 5672 # Port on RabbitMQ pods to receive AMQP traffic.
+      nodePort: 30672 # Static port on each node to access the Service from outside the cluster.
+  selector: # Identify pods eligible for service traffic routing.
+    app: rabbitmq # Select pods with this "rabbitmq" label to receive traffic.
+
+
+
+# ----------------------------------
+# Accessing RabbitMQ
+# ----------------------------------
+
+# Within Cluster: Use service name "rabbitmq" and ports (15672 for HTTP, 5672 for AMQP).
+# Externally: Use any node's IP address and NodePorts (31672 for HTTP, 30672 for AMQP).

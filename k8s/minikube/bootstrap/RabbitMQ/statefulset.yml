@@ -1,0 +1,103 @@
+# -----------------------------------------------------
+# Definition Of A Kubernetes StatefulSet for RabbitMQ
+# -----------------------------------------------------
+
+apiVersion: apps/v1  # API version for StatefulSets
+kind: StatefulSet  # Resource type for managing stateful applications
+metadata:
+  name: rabbitmq  # Name of the StatefulSet
+# -----------------------------------
+# StatefulSet Configuration
+# -----------------------------------
+spec:
+  serviceName: rabbitmq # Name of the service for pod communication.
+  # -----------------------------------
+  # Number of replicas (instances) of RabbitMQ to create and maintain.
+  # Three nodes is the recommended minimum. Some features may require a majority of nodes to be available.
+  # -----------------------------------
+  replicas: 1
+  selector:
+    matchLabels:  # Label for selecting pods managed by this StatefulSet
+      app: rabbitmq   # Selects pods based on the "rabbitmq" label
+  # -----------------------------------
+  # Pod Template
+  # -----------------------------------
+  template:
+    metadata:
+      labels: # Labels applied to each pod
+        app: rabbitmq  # Labels for pods to match the selector
+    spec:
+      serviceAccountName: rabbitmq # Specifies the ServiceAccount to use for the pod permissions
+      terminationGracePeriodSeconds: 10 # Grace period for termination signals
+      nodeSelector:
+        kubernetes.io/os: linux  # Restrict pods to run on Linux nodes. Use Linux nodes in a mixed OS kubernetes cluster.
+      # -----------------------------------
+      # Containers
+      # -----------------------------------
+      containers:
+        - name: rabbitmq-k8s # Container name
+          image: rabbitmq:3.12.11-management-alpine  # Docker image for RabbitMQ
+          volumeMounts: # Mount configuration volumes into the container
+            - name: config-volume
+              mountPath: /etc/rabbitmq  # Mount path for RabbitMQ configuration from ConfigMap
+          ports: # Container ports
+            - name: http
+              protocol: TCP
+              containerPort: 15672  # Expose RabbitMQ management UI
+            - name: amqp
+              protocol: TCP
+              containerPort: 5672  # RabbitMQ AMQP port
+          # ------------------------------------------------------------------------------------------------
+          # Health Checks: This is just an example.
+          # There is no "one true health check" but rather
+          # several rabbitmq-diagnostics commands that can be combined to form increasingly comprehensive
+          # and intrusive health checks.
+          # Learn more at https://www.rabbitmq.com/monitoring.html#health-checks.
+          #
+          # Stage 2 check:
+          # ------------------------------------------------------------------------------------------------
+          livenessProbe: # Check if RabbitMQ is running
+            exec: # Execute a command to check health
+              command: ["rabbitmq-diagnostics", "status"]   # RabbitMQ status check
+            initialDelaySeconds: 60  # Delay before first check
+            periodSeconds: 60  # Check interval. See https://www.rabbitmq.com/monitoring.html for monitoring frequency recommendations.
+            timeoutSeconds: 15  # Timeout for health check response
+          readinessProbe:  # Check if RabbitMQ is ready for traffic.  Stage 1 check:
+            exec:
+              command: ["rabbitmq-diagnostics", "ping"] # RabbitMQ ping check
+            initialDelaySeconds: 20  # Delay before first readiness check
+            periodSeconds: 60  # Check interval
+            timeoutSeconds: 10  # Timeout for readiness check response
+          imagePullPolicy: Always # Always pull the latest RabbitMQ image
+          # -----------------------------------
+          # Environment Variables
+          # -----------------------------------
+          env: # Environment variables for RabbitMQ configuration
+            - name: MY_POD_NAME  # Pod name
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE  # Pod namespace
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: RABBITMQ_USE_LONGNAME  # Use long node names for clustering
+              value: "true"
+            - name: K8S_SERVICE_NAME  # Service name for pod communication. See a note on cluster_formation.k8s.address_type in the config file section.
+              value: rabbitmq
+            - name: RABBITMQ_NODENAME  # Unique node name for each pod
+              value: rabbit@$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+            - name: K8S_HOSTNAME_SUFFIX  # Hostname suffix for pod communication
+              value: .$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+            - name: RABBITMQ_ERLANG_COOKIE  # Erlang cookie for clustering
+              value: "mycookie"  # Replace with a secure cookie in production
+      volumes:
+        - name: config-volume
+          configMap:
+            name: rabbitmq-config
+            items:
+              - key: rabbitmq.conf
+                path: rabbitmq.conf
+              - key: enabled_plugins
+                path: enabled_plugins

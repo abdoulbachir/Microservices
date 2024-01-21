@@ -1,4 +1,4 @@
-#
+# This StatefulSet deploys a single PostgreSQL pod with persistent storage, configured using a ConfigMap, and managed by a headless service.
 
 apiVersion: apps/v1  # Specifies the API version to use
 kind: StatefulSet  # Declares a StatefulSet resource

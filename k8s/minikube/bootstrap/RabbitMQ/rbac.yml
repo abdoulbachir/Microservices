@@ -1,0 +1,32 @@
+---
+#  Creates a service account named rabbitmq for the RabbitMQ pods.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rabbitmq  # Name of the ServiceAccount
+---
+#  Defines a Role for RabbitMQ peer discovery RBAC with specific permissions.
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rabbitmq-peer-discovery-rbac # Name of the Role
+rules: # Rules define permissions for the Role.
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get"] # Allowing the 'get' operation on endpoints
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create"] # Allowing the 'create' operation on events
+---
+# RoleBinding associates the Role with a ServiceAccount
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rabbitmq-peer-discovery-rbac # Name of the RoleBinding
+subjects:   # Subjects specify the ServiceAccount to which the Role is bound
+  - kind: ServiceAccount
+    name: rabbitmq # Reference to the rabbitmq ServiceAccount
+roleRef:  # RoleRef identifies the Role to be bound
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rabbitmq-peer-discovery-rbac # Reference to the rabbitmq-peer-discovery-rbac Role

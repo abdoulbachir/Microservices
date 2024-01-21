@@ -1,4 +1,4 @@
-#
+# Create a ClusterIP-based endpoint for accessing PostgreSQL pods within the cluster using the Service's name and port.
 
 apiVersion: v1  # Specifies the API version to use
 kind: Service  # Declares a Service resource
