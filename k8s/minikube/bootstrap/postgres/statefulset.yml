@@ -1,0 +1,43 @@
+#
+
+apiVersion: apps/v1  # Specifies the API version to use
+kind: StatefulSet  # Declares a StatefulSet resource
+metadata:  # Metadata for the StatefulSet
+  name: postgres  # Name of the StatefulSet
+  labels:
+    app: postgres  # Label for identifying pods in the StatefulSet
+
+spec: # Specification of the StatefulSet
+  serviceName: postgres  # Name of the headless service associated with the StatefulSet
+  replicas: 1  # Number of replicas (pods) to create
+  selector:
+    matchLabels:
+      app: postgres  # Selector for identifying pods that belong to the StatefulSet
+  template:
+    metadata:
+      name: postgres  # Template for pod metadata
+      labels:
+        app: postgres  # Labels applied to each pod
+    spec:
+      volumes:
+        - name: postgres  # Name of the volume
+          persistentVolumeClaim:  # References a PVC for persistent storage
+            claimName: postgres-pc-volume-claim  # Name of the PVC to use
+      containers:
+        - name: postgres  # Name of the container
+          image: postgres  # Container image to use
+          imagePullPolicy: IfNotPresent  # Pull policy for the image
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data  # Mounts the volume into the container
+              name: postgres  # Name of the volume to mount
+          envFrom:
+            - configMapRef:
+                name: postgres-config  # Sets environment variables from a ConfigMap
+          resources:
+            requests:
+              cpu: 100m  # Minimum CPU request
+              memory: 256Mi  # Minimum memory request
+            limits:
+              cpu: 500m  # Maximum CPU limit
+              memory: 512Mi  # Maximum memory limit
+      restartPolicy: Always  # Restarts pods if they fail

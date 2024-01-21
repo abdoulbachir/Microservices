@@ -1,0 +1,34 @@
+# Define how postgres will store its data into the minikube node
+
+# --- Persistent Volume (PV) ---
+apiVersion: v1  # Specifies the API version to use (v1 for core resources)
+kind: PersistentVolume  # Declares a PersistentVolume resource
+metadata:  # Metadata for the PV
+  name: postgres-pc-volume  # Name of the PV
+  labels:
+    type: local  # Label for identifying local PVs
+    app: postgres  # Label indicating its usage for PostgreSQL
+spec:  # Specification of the PV
+  storageClassName: manual  # Manually provisioned storage class
+  capacity:
+    storage: 5Gi  # Storage capacity of 5 gigabytes
+  accessModes:
+    - ReadWriteMany  # Allows multiple pods to read and write simultaneously
+  hostPath:  # Specifies the host path to use for the PV
+    path: /mnt/data  # The actual path on the host node
+
+---
+# --- Persistent Volume Claim (PVC) ---
+apiVersion: v1  # Specifies the API version to use
+kind: PersistentVolumeClaim  # Declares a PersistentVolumeClaim resource
+metadata:  # Metadata for the PVC
+  name: postgres-pc-volume-claim  # Name of the PVC
+  labels:
+    type: local  # Label for identifying local PVCs
+spec: # Specification of the PVC
+  storageClassName: manual  # Matches the storage class of the PV
+  accessModes:
+    - ReadWriteMany  # Matches the access mode of the PV
+  resources:
+    requests:
+      storage: 5Gi  # Requests 5 gigabytes of storage

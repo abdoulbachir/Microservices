@@ -1,0 +1,10 @@
+# This where we add postgres database name, username and password
+
+apiVersion: v1  # Specifies the API version to use
+kind: ConfigMap  # Declares a ConfigMap resource
+metadata:  # Metadata for the ConfigMap
+  name: postgres-config  # Name of the ConfigMap
+data:  # Data stored in the ConfigMap
+  POSTGRES_DB: "bachir"  # Database name for PostgreSQL
+  POSTGRES_USER: "bachir"  # Database username
+  POSTGRES_PASSWORD: "password"  # Database password
