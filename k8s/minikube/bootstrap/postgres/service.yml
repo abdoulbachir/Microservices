@@ -3,7 +3,7 @@
 apiVersion: v1  # Specifies the API version to use
 kind: Service  # Declares a Service resource
 metadata:  # Metadata for the Service
-  name: postgres  # Name of the Service
+  name: postgres2  # Name of the Service
 spec: # Specification of the Service
   selector:  # Specifies the criteria for selecting pods that the Service will target
     app: postgres  # Targets pods with the label "app: postgres"

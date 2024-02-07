@@ -1,0 +1,14 @@
+# This Service configuration exposes any Pods with the app: customer label on port 8080 internally within the cluster.
+
+apiVersion: v1  # Specifies the API version to use
+kind: Service  # Declares a Service resource
+metadata:  # Metadata for the Service
+  name: customer  # Name of the Service(Unique)
+spec:  # Specification of the Service
+  selector:  # Specifies the criteria for selecting pods that the Service will target
+    app: customer  # Targets pods with the label "app: customer"
+  ports:
+    - protocol: TCP  # Protocol for the exposed port
+      port: 80    # Port you would use to access the service from outside the cluster
+      targetPort: 8080  # Port on the target pods to forward traffic to
+  type: NodePort  # NodePort means that the Service will be accessible from outside the cluster.

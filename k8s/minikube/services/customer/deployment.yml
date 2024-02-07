@@ -1,0 +1,29 @@
+# This deployment creates and manages a single Pod running the "customer" application image with port 8080 exposed.
+
+apiVersion: apps/v1  # Specifies the API version to use
+kind: Deployment  # Declares a Deployment resource
+metadata: # Metadata for the Service
+  name: customer  # Name of the deployment
+  labels:
+    app: customer # Label assigned to the deployment (can be used for filtering and selecting groups of deployments).
+spec:  # Specification of the deployment
+  replicas: 1  # Number of replicas (pods) to create
+  selector:  # This section defines how the deployment identifies and manages its Pods.
+    matchLabels:
+      app: customer  # This tells the deployment to manage any Pods with the label "app: customer".
+  template:  # This section defines the template used to create new Pods for the deployment
+    metadata:  # Similar to the deployment itself, this assigns labels to the Pods created by the deployment.
+      name: customer
+      labels:
+        app: customer
+    spec:  # This defines the configuration of the Pods.
+      containers:  # This list defines the container(s) running within the Pod
+        - name: customer  # This names the container "customer" and ...
+          image: bachir95/customer  # specifies the Docker image to use (bachir95/customer).
+          imagePullPolicy: Always  # This tells the Pod to always pull the latest image from the registry before starting, even if a local copy exists.
+          ports:
+            - containerPort: 8080  # This exposes port 8080 within the container.
+          env: # This sets an environment variable named SPRING_PROFILES_ACTIVE with the value "kube".
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+      restartPolicy: Always  # This tells the Pod to always restart itself if it crashes or exits unexpectedly.
