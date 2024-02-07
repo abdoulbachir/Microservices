@@ -76,53 +76,50 @@ services:
 #      - zipkin
 #      - eureka-server
 
-#  customer:
-#    image: bachir95/customer:latest
-#    container_name: customer
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker  #This value is needed because of `application-docker.yml`
-#    networks:
-#      - spring # To communicate with other spring applications
-#      - postgres # To communicate with postgres database
-#    depends_on:
-#      - zipkin
-#      - eureka-server
-#      - postgres
-#      - rabbitmq
-#
-#  fraud:
-#    image: bachir95/fraud:latest
-#    container_name: fraud
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker  #This value is needed because of `application-docker.yml`
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
-#      - zipkin
-#      - eureka-server
-#      - postgres
-#      - rabbitmq
-#
-#  notification:
-#    image: bachir95/notification:latest
-#    container_name: notification
-#    ports:
-#      - "8082:8082"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker  #This value is needed because of `application-docker.yml`
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
-#      - zipkin
-#      - eureka-server
-#      - postgres
-#      - rabbitmq
+  customer:
+    image: bachir95/customer:latest
+    container_name: customer
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker  #This value is needed because of `application-docker.yml`
+    networks:
+      - spring # To communicate with other spring applications
+      - postgres # To communicate with postgres database
+    depends_on:
+      - zipkin
+      - postgres
+      - rabbitmq
+
+  fraud:
+    image: bachir95/fraud:latest
+    container_name: fraud
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker  #This value is needed because of `application-docker.yml`
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - postgres
+      - rabbitmq
+
+  notification:
+    image: bachir95/notification:latest
+    container_name: notification
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker  #This value is needed because of `application-docker.yml`
+    networks:
+      - spring
+      - postgres
+    depends_on:
+      - zipkin
+      - postgres
+      - rabbitmq
 
 networks:
   postgres:
